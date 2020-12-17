@@ -217,7 +217,7 @@ export default {
 #Cliente h2{
     width: 100%;
     text-align: center;
-    margin-top: 1%;
+    margin-top: 7%;
     color:  #fffdfd;
 }
 #Cliente .formulario {
