@@ -38,13 +38,12 @@
             <div class="botones">
                 <div style='text-align:center'>
                     <right>
-                        <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
+                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="closeLista">Cerrar Lista</button>
-                        <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br />
+                        <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
                     </right>
                 </div>
             </div>
@@ -71,6 +70,7 @@ export default {
     name: "Inventario",
     data: function () {
         return {
+            showTable: false,
             id: "",
             nombre: "",
             precio: 0,
@@ -119,13 +119,15 @@ export default {
             this.$router.push({name: "inventario", params: { username: 'username' }});
         }
         },
-
+        toggle: function() {
+        this.showTable = !this.showTable;
+        },
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+            axios.get("https://restaurante-back-g1.herokuapp.com/producto/consulta/" + this.id)
                 .then((result) => {
-                    self.id = result.data.id_producto
+                    self.id = result.data.id
                     self.nombre = result.data.nombre
                     self.precio = result.data.precio
                     self.cantidad = result.data.cantidad
@@ -135,20 +137,19 @@ export default {
                     document.getElementById("nomprod").value = self.nombre;
                     document.getElementById("precprod").value = self.precio;
                     document.getElementById("cantprod").value = self.cantidad;
-                    document.getElementById("catprod").value = self.categoria;                 
+                   //document.getElementById("catprod").value = self.categoria;   
+                   self.selected = self.categoria;              
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
         },
-
         createProducto: function () {
             this.id = document.getElementById("idprod").value
             this.nombre = document.getElementById("nomprod").value
             this.precio = document.getElementById("precprod").value
             this.cantidad = document.getElementById("cantprod").value
             this.categoria = document.getElementById("catprod").value
-
             this.newProducto = {
                             "id": this.id,
                             "nombre": this.nombre,
@@ -157,7 +158,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
+            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -167,12 +168,11 @@ export default {
             this.myProvider()
             this.$refs.table.refresh()
         },
-
         myProvider: function () {
             console.log("Entro");
             let self = this
             
-            axios.get("http://127.0.0.1:8000/producto/lista/")
+            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -236,17 +236,14 @@ export default {
                 .then((result) => {
                     
                     confirm("El producto se eliminó exitosamente");
-                    
-                    
+                        
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
             this.myProvider()
             this.$refs.table.refresh()
-
         },
-
         cleanCampos: function () {
             
             document.getElementById("idprod").value = ""
@@ -296,7 +293,7 @@ export default {
 #Inventario h2{
     width: 100%;
     text-align: center;
-    margin-top: 1%;
+    margin-top: 2%;
     color:  #fffdfd;
 }
 #Inventario .formulario {

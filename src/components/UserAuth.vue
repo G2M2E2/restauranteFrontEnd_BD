@@ -61,10 +61,6 @@ export default {
 </script>
 
 
-
-
-
-
 <style>
 
     .auth_user{
@@ -125,8 +121,8 @@ export default {
         border: 1px solid #E5E7E9;
 
         border-radius: 5px;
-        padding: 10px 25px;
-        margin: 5px 0;
+        padding: 5px 15px;
+        margin: 5% 0;
     }
 
     .auth_user button:hover{
