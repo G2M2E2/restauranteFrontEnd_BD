@@ -194,11 +194,7 @@ export default {
             this.$refs.table.refresh()
 
         },
-        
-        
-
-        
-        
+           
     },   
 
 };

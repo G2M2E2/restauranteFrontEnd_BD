@@ -3,7 +3,7 @@ import User from './components/User'
 import App from './App'
 import Cliente from './components/Cliente'  
 import Inventario from './components/Inventario' 
-
+import Venta from './components/Venta'
 import UserAuth from './components/UserAuth'
 
 const router = new vueRouter({
@@ -29,6 +29,11 @@ const router = new vueRouter({
                 path: '/inventario/:username',
                 name: "inventario",
                 component: Inventario
+            },
+            {
+                path: '/venta/:username',
+                name: "venta",
+                component: Venta
             },
 
             {

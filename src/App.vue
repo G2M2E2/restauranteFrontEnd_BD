@@ -9,7 +9,7 @@
           <button v-on:click="init" v-if="is_auth">Inicio</button>
           <button v-on:click="getCliente" v-if="is_auth" > Cliente </button>
           <button v-on:click="getInventario" v-if="is_auth">Inventario</button>
-          <button v-if="is_auth">Ventas</button>
+          <button v-on:click="getVenta" v-if="is_auth">Venta</button>
           <button v-on:click="logOut" v-if="is_auth" >Cerrar Sesión</button>
         </nav>
 
@@ -87,6 +87,15 @@ import vueRouter from 'vue-router'
           })
         }
       },
+
+      getVenta: function(){
+        if(this.$route.name != "venta"){
+          let username = localStorage.getItem("current_username")
+          this.$router.push({name:"venta", params:{username:username}
+          })
+        }
+      },
+
 
     },
     created: function(){
