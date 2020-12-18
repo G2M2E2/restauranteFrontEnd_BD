@@ -49,7 +49,7 @@
                         <button type="button" class="btn btn-warning" v-on:click="makeCliente">Crear</button>
                         <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="deleteCliente">Eliminar</button><br /><br />
+                        <button type="button" class="btn btn-warning" v-on:click="deleteCliente">Eliminar</button><br />
                         
 
                     </right>
@@ -57,9 +57,19 @@
             </div>
         
         </form>
-        <br />
         
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        
+        <b-table 
+            sticky-header 
+            ref="table" 
+            id="my-table" 
+            :fields="fields"
+            striped hover 
+            :items="items"
+            @row-clicked="myRowClickHandler"
+        >
+        
+        </b-table>
         
     </div>
 </template>
@@ -81,7 +91,16 @@ export default {
             cumpleanos: "",
             balance: 0,
             newCliente: {},
-            items: []
+            items: [],
+            fields: [
+                { key: 'telefono', label: 'Teléfono', sortable: true, sortDirection: 'desc' },
+                { key: 'nombre', label: 'Nombre', sortable: true, class: 'text-center' },
+                { key: 'direccion', label: 'Dirección', sortable: true, class: 'text-center' },
+                { key: 'barrio', label: 'Barrio', sortable: true, class: 'text-center' },
+                { key: 'cedula', label: 'Cédula', sortable: true, class: 'text-center' },
+                { key: 'cumpleanos', label: 'Cumpleaños', sortable: true, class: 'text-center' },
+                { key: 'correo_electronico', label: 'Correo electrónico', sortable: true, class: 'text-center' },
+            ],
             
             
         };
@@ -194,14 +213,27 @@ export default {
             this.$refs.table.refresh()
 
         },
+        myRowClickHandler(record, index) {
+            // 'record' will be the row data from items
+            // `index` will be the visible row number (available in the v-model 'shownItems')
+            self.telefono = record.telefono
+            self.nombre = record.nombre
+            self.direccion = record.direccion
+            self.barrio = record.barrio
+            self.cedula = record.cedula
+            self.cumpleanos = record.cumpleanos
+            
+            document.getElementById("Phone").value = self.telefono;
+            document.getElementById("name").value = self.nombre;
+            document.getElementById("adress").value = self.direccion;
+            document.getElementById("zone").value = self.barrio;
+            document.getElementById("idCC").value = self.cedula;
+            document.getElementById("birth").value = self.cumpleanos;
+            
+        },
         
-        
-
-        
-        
-    },   
-
-};
+    }
+}
 </script>
 
 <style>

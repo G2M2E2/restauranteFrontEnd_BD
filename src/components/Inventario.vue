@@ -41,16 +41,26 @@
                         <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
+                        <button type="button" class="btn btn-warning" v-on:click="closeLista">Cerrar Lista</button>
+                        <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br />
                     </right>
                 </div>
             </div>
         </form>
-        <br />
         
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        
+        <b-table 
+            sticky-header 
+            ref="table" 
+            id="my-table" 
+            striped hover 
+            show-empty = true
+            :fields="fields" 
+            :items="items"
+            @row-clicked="myRowClickHandler"
+        ></b-table>
         
     </div>
 </template>
@@ -91,7 +101,14 @@ export default {
                 {value: 'tipicos', text: 'Típicos'},
                 {value: 'varios', text: 'Varios'},
                 {value: 'vinos', text: 'Vinos'},
-            ]
+            ],
+            fields: [
+                { key: 'id_producto', label: 'Id Producto', sortable: true, sortDirection: 'desc' },
+                { key: 'nombre', label: 'Nombre', sortable: true, class: 'text-center' },
+                { key: 'precio', label: 'Precio', sortable: true, class: 'text-center' },
+                { key: 'cantidad', label: 'Cantidad', sortable: true, class: 'text-center' },
+                { key: 'categoria', label: 'Categoría', sortable: true, class: 'text-center' },
+            ],
 
         };
     },
@@ -102,12 +119,13 @@ export default {
             this.$router.push({name: "inventario", params: { username: 'username' }});
         }
         },
+
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/consulta/" + this.id)
+            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
                 .then((result) => {
-                    self.id = result.data.id
+                    self.id = result.data.id_producto
                     self.nombre = result.data.nombre
                     self.precio = result.data.precio
                     self.cantidad = result.data.cantidad
@@ -117,19 +135,20 @@ export default {
                     document.getElementById("nomprod").value = self.nombre;
                     document.getElementById("precprod").value = self.precio;
                     document.getElementById("cantprod").value = self.cantidad;
-                   //document.getElementById("catprod").value = self.categoria;   
-                   self.selected = self.categoria;              
+                    document.getElementById("catprod").value = self.categoria;                 
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
         },
+
         createProducto: function () {
             this.id = document.getElementById("idprod").value
             this.nombre = document.getElementById("nomprod").value
             this.precio = document.getElementById("precprod").value
             this.cantidad = document.getElementById("cantprod").value
             this.categoria = document.getElementById("catprod").value
+
             this.newProducto = {
                             "id": this.id,
                             "nombre": this.nombre,
@@ -138,7 +157,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
+            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -148,11 +167,12 @@ export default {
             this.myProvider()
             this.$refs.table.refresh()
         },
+
         myProvider: function () {
             console.log("Entro");
             let self = this
             
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
+            axios.get("http://127.0.0.1:8000/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -161,6 +181,46 @@ export default {
                 return []
             })
         },
+
+        filtrarProducto:function () {
+            console.log("Entro a buscar");
+            this.snombre = document.getElementById("nomprod").value
+            this.cat = document.getElementById("catprod").value
+            this.id = document.getElementById("idprod").value
+            let self = this
+            if (this.snombre!=""){
+                axios.get("http://127.0.0.1:8000/producto/consulta_n/"+ this.snombre)
+            .then((result) => {
+                self.items = result.data
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })   
+            }
+            else if (this.cat!="")
+                {
+            axios.get("http://127.0.0.1:8000/producto/consulta_g/" + this.cat)
+                .then((result) => {
+                self.items = result.data
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
+                }
+            else if(this.id!=""){
+                axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+                .then((result) => {
+                self.items = [result.data]
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
+            }
+        },
+
         deleteProducto: function () {
             this.id = document.getElementById("idprod").value
             this.producto = {
@@ -176,14 +236,17 @@ export default {
                 .then((result) => {
                     
                     confirm("El producto se eliminó exitosamente");
-                        
+                    
+                    
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
             this.myProvider()
             this.$refs.table.refresh()
+
         },
+
         cleanCampos: function () {
             
             document.getElementById("idprod").value = ""
@@ -193,7 +256,30 @@ export default {
             document.getElementById("catprod").value = ""
                                 
         },
+        myRowClickHandler(record, index) {
+            // 'record' will be the row data from items
+            // `index` will be the visible row number (available in the v-model 'shownItems')
+
+            self.id = record.id_producto
+            self.nombre = record.nombre
+            self.precio = record.precio
+            self.cantidad = record.cantidad
+            self.categoria = record.categoria
+            
+            document.getElementById("idprod").value = self.id;
+            document.getElementById("nomprod").value = self.nombre;
+            document.getElementById("precprod").value = self.precio;
+            document.getElementById("cantprod").value = self.cantidad;
+            document.getElementById("catprod").value = self.categoria;    
+            
+        },
+        closeLista: function () {
+            
+            this.$refs.table.bootstrapTable('hideAllColumns')
+                                
+        },
     },
+    
 }
 </script>
 
