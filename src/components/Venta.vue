@@ -51,7 +51,7 @@
             <div class="botones">
                 <div style='text-align:center'>
                     <right>
-                        <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
+                       <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="createVenta">Agregar</button>
                        <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
@@ -68,7 +68,7 @@
         </form>
         <br />
         
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
         
     </div>
 </template>
@@ -80,6 +80,7 @@ export default {
     name: "Venta",
     data: function () {
         return {
+            showTable: false,
             venta_id: 0,
             id_producto: "", //¿está bien así o debería ser solo id?
             nombre_producto: "",
@@ -101,8 +102,9 @@ export default {
                 this.$router.push({name: "venta", params: { username: 'username' }});
             }
         },
-
-
+        toggle: function() {
+        this.showTable = !this.showTable;
+        },
         findVenta: function () {
             this.venta_id = document.getElementById("idventa").value
             let self = this
@@ -303,7 +305,7 @@ export default {
 #Venta h2{
     width: 100%;
     text-align: center;
-    margin-top: 7%;
+    margin-top: 2%;
     color:  #fffdfd;
 }
 #Venta .formulario {

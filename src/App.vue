@@ -111,7 +111,7 @@ import vueRouter from 'vue-router'
   body{
     margin: 0%;
     background-image: url("./assets/carne.jpg");
-    background-position: center;
+    background-position: 30%;
   }
   .header{
     margin: 0%;

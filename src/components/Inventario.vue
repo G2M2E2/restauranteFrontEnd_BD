@@ -38,7 +38,7 @@
             <div class="botones">
                 <div style='text-align:center'>
                     <right>
-                        <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
                         <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
@@ -50,7 +50,7 @@
         </form>
         <br />
         
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
         
     </div>
 </template>
@@ -61,6 +61,7 @@ export default {
     name: "Inventario",
     data: function () {
         return {
+            showTable: false,
             id: "",
             nombre: "",
             precio: 0,
@@ -101,6 +102,9 @@ export default {
             let username = input.idprod.getItem("current_username");
             this.$router.push({name: "inventario", params: { username: 'username' }});
         }
+        },
+        toggle: function() {
+        this.showTable = !this.showTable;
         },
         findProducto: function () {
             this.id = document.getElementById("idprod").value
@@ -210,7 +214,7 @@ export default {
 #Inventario h2{
     width: 100%;
     text-align: center;
-    margin-top: 1%;
+    margin-top: 2%;
     color:  #fffdfd;
 }
 #Inventario .formulario {

@@ -44,7 +44,7 @@
             <div class="botones">
                 <div style='text-align:center'>
                     <right>
-                        <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button>
                         <button type="button" class="btn btn-warning"  v-on:click="findCliente">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="makeCliente">Crear</button>
                         <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
@@ -59,7 +59,7 @@
         </form>
         <br />
         
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
         
     </div>
 </template>
@@ -94,7 +94,10 @@ export default {
             this.$router.push({name: "cliente", params:{ username: 'username' }});
         }
         },
-
+        //Función para mostrar y ocultar la tabla
+        toggle: function() {
+        this.showTable = !this.showTable;
+        },
         findCliente: function () {
             this.telefono = document.getElementById("Phone").value
             let self = this
@@ -213,7 +216,7 @@ export default {
 #Cliente h2{
     width: 100%;
     text-align: center;
-    margin-top: 7%;
+    margin-top: 2%;
     color:  #fffdfd;
 }
 #Cliente .formulario {
