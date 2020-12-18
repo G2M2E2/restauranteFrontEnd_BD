@@ -56,8 +56,8 @@
                         <button type="button" class="btn btn-warning" v-on:click="createVenta">Agregar</button>
                        <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                       <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> -->
+                       <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
+                        <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> 
                         <br /><br />
                         
 
@@ -167,7 +167,7 @@ export default {
             this.$refs.table.refresh()
         },
         
-/* 
+
         comprar: function () {
             this.venta_id = document.getElementById("idventa").value
 
@@ -182,7 +182,7 @@ export default {
                 alert("ERROR Servidor");
                 return []
             })
-        },*/
+        },
 
         myProvider: function () {
             console.log("Entró");
