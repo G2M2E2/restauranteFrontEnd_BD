@@ -50,25 +50,35 @@
             <br>
             <div class="botones">
                 <div style='text-align:center'>
-                    <right>
-                       <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
+                    
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
-                        <button type="button" class="btn btn-warning" v-on:click="createVenta">Agregar</button>
-                       <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
+                        <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                       <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
+                        <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
                         <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> 
                         <br /><br />
                         
 
-                    </right>
+                
                 </div>
             </div>
         
         </form>
         <br />
         
-        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        <b-table v-show="showTable" :fields="fields" sticky-header ref="table" id="my-table" striped hover :items="items">
+            
+
+            <template #foot()="data">
+                <i>Total: {{ data.label }}</i>
+            </template>
+
+
+        </b-table>
+ 
+        <span class="label label-default">Total = {{totalventa}}</span>
         
     </div>
 </template>
@@ -80,8 +90,9 @@ export default {
     name: "Venta",
     data: function () {
         return {
-            showTable: false,
+            showTable: true,
             venta_id: 0,
+            totalventa: 0,
             id_producto: "", //¿está bien así o debería ser solo id?
             nombre_producto: "",
             precio_producto: 0,
@@ -90,7 +101,14 @@ export default {
             fecha_venta: "",
             telefono: 0,
             newVenta: {}, 
-            items: [] 
+            items: [],
+            fields: [
+                { key: 'id_producto', label: 'Id Producto', sortable: true, sortDirection: 'desc' },
+                { key: 'nombre_producto', label: 'Nombre', sortable: true, class: 'text-center' },
+                { key: 'precio_producto', label: 'Precio', sortable: true, class: 'text-center' },
+                { key: 'cantidad_producto', label: 'Cantidad', sortable: true, class: 'text-center' },
+                { key: 'sub_total', label: 'Sub Total', sortable: true, class: 'text-center' },
+            ], 
         };
     },
 
@@ -156,14 +174,17 @@ export default {
             let self = this          
             axios.post("http://127.0.0.1:8000/venta/crear/", this.newVenta)
                 .then((result) => {
-                    
+                    console.log(result.data)
                     window.confirm("Venta creada");
-                    self.items = result.newVenta
+                    self.items = result.data
+                    self.subtotal1 = result.data.sub_total
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
-            this.myProvider()
+            
+            this.totalventa= this.totalventa+this.subtotal1
+            this.showTable= true
             this.$refs.table.refresh()
         },
         
@@ -176,12 +197,13 @@ export default {
             
             axios.get("http://127.0.0.1:8000/venta/comprar/")
             .then((result) => {
-                self.items = result.data
+                self.items = []
             }).catch(error => {
                 
                 alert("ERROR Servidor");
                 return []
             })
+            this.showTable= false
         },
 
         myProvider: function () {
