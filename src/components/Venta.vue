@@ -3,72 +3,113 @@
         <br />
         <h2 >MÓDULO DE VENTAS</h2>
         <br />
-        
+
+    <form>
+        <div class = "formulario" >
+            <div class="form-group col-md-3">
+                <label for="telefono">Teléfono:</label>
+                <input type="number" class="form-control" id="telefono" name="telefono" value="" placeholder="Teléfono"/>
+            <br>
+                <div class="botones">
+                    <div style='text-align:left'>               
+                        <button type="button" class="btn btn-warning" @click="findCliente">Buscar cliente</button> 
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+    
+    </form>
+
         <form>
             <div class = "formulario" >
 
                 <div class="form-row" >
-                    <div class="form-group col-md-3">
+                  <!--  <div class="form-group col-md-3">
                         <label for="idventa">Id Venta:</label>
                         <input type="number" class="form-control" id="idventa" name="idventa" value=""  placeholder="Id"/>
-                    </div>
+                    
+                   </div>-->
                     <div class="form-group col-md-3">
                         <label for="idprod">Id Producto:</label>
                         <input type="text" class="form-control" id="idprod" name="idprod" value=""  placeholder="Id_producto"/>
                     </div>
-                    <div class="form-group col-md-3">
-                        <label for="nomprod">Nombre:</label>
-                        <input type="text" class="form-control" id="nomprod" name="nomprod" value="" placeholder="Nombre"/>
-                    </div>
-                    </div>
-                <div class="form-row">
                     
                     <div class="form-group col-md-3">
-                        <label for="precprod">Precio:</label>
-                        <input type="number" class="form-control" id="precprod" name="precprod" value="" placeholder="Precio"/>  
-                    </div>
+                        <label for="nomprod">Nombre de producto:</label>
+                        <!--<input type="text" class="form-control" id="nomprod" name="nomprod" value="" placeholder="Nombre"/>-->
+                        <b-form-select id="catprod" v-model="selected" :options="options" ></b-form-select>
+                    </div> 
                     <div class="form-group col-md-3">
                         <label for="cantprod">Cantidad:</label>
                         <input type="number" class="form-control" id="cantprod" name="cantprod" value="" placeholder="Cantidad"/>
                     </div>
+                    </div>
+                <div class="form-row">
+                    <!--
+                    <div class="form-group col-md-3">
+                        <label for="precprod">Precio:</label>
+                        <input type="number" class="form-control" id="precprod" name="precprod" value="" placeholder="Precio"/>  
+                    </div>-->
+                    
+                    <!--
                     <div class="form-group col-md-3">
                         <label for="subtotal">Subtotal:</label>
                         <input type="number" class="form-control" id="subtotal" name="subtotal" value="" placeholder="Subtotal"/>
-                    </div>
+                    </div> -->
                 </div>
+                <!--
                 <div class="form-row">
                     <div class="form-group col-md-3">
                         <label for="fechaventa">Fecha:</label>
                         <input type="text" class="form-control" id="fechaventa" name="fechaventa" value="" placeholder="Fecha"/>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="telefono">Teléfono:</label>
-                        <input type="number" class="form-control" id="telefono" name="telefono" value="" placeholder="Teléfono"/>
-                    </div>
-                </div>
+                    </div> 
+                    
+                </div>-->
             </div>
             <br>
             <div class="botones">
                 <div style='text-align:center'>
-                    <right>
-                       <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
+                    
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
-                        <button type="button" class="btn btn-warning" v-on:click="createVenta">Agregar</button>
-                       <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
+                        <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                       <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
+                        <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
                         <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> 
                         <br /><br />
                         
 
-                    </right>
+                
                 </div>
             </div>
         
         </form>
         <br />
         
-        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        <b-table 
+            v-show="showTable" 
+            :fields="fields" 
+            sticky-header 
+            ref="table" 
+            id="my-table" 
+            striped hover 
+            :items="items"
+            @row-clicked="myRowClickHandler">
+            
+            
+
+            <template #foot()="data">
+                <i>Total: {{ data.label }}</i>
+            </template>
+
+
+        </b-table>
+ 
+        <span class="label label-default">Total = {{totalventa}}</span>
         
     </div>
 </template>
@@ -80,8 +121,9 @@ export default {
     name: "Venta",
     data: function () {
         return {
-            showTable: false,
+            showTable: true,
             venta_id: 0,
+            totalventa: 0,
             id_producto: "", //¿está bien así o debería ser solo id?
             nombre_producto: "",
             precio_producto: 0,
@@ -90,7 +132,15 @@ export default {
             fecha_venta: "",
             telefono: 0,
             newVenta: {}, 
-            items: [] 
+            items: [],
+            fields: [
+                { key: 'id_producto', label: 'Id Producto', sortable: true, sortDirection: 'desc' },
+                { key: 'nombre_producto', label: 'Nombre', sortable: true, class: 'text-center' },
+                { key: 'precio_producto', label: 'Precio', sortable: true, class: 'text-center' },
+                { key: 'cantidad_producto', label: 'Cantidad', sortable: true, class: 'text-center' },
+                { key: 'sub_total', label: 'Sub Total', sortable: true, class: 'text-center' },
+            ], 
+            options: [],
         };
     },
 
@@ -104,6 +154,20 @@ export default {
         },
         toggle: function() {
         this.showTable = !this.showTable;
+        },
+        findCliente: function () {
+            this.telefono = document.getElementById("telefono").value
+            let self = this
+            axios.get("http://127.0.0.1:8000/cliente/consulta/" + this.telefono)
+                .then((result) => {
+                    self.telefono = result.data.telefono
+                    self.nombre = result.data.nombre
+                    confirm("Se encontró el cliente " + self.nombre);
+                    document.getElementById("telefono").value = self.telefono;
+                })
+                .catch((error) => {
+                    alert("No se encontró el cliente");
+                });
         },
         findVenta: function () {
             this.venta_id = document.getElementById("idventa").value
@@ -134,54 +198,61 @@ export default {
         },
 
         createVenta: function () {
-            this.venta_id = document.getElementById("idventa").value
+            //this.venta_id = document.getElementById("idventa").value
             this.id_producto = document.getElementById("idprod").value
             this.nombre_producto = document.getElementById("nomprod").value
-            this.precio_producto = document.getElementById("precprod").value
+            //this.precio_producto = document.getElementById("precprod").value
             this.cantidad_producto = document.getElementById("cantprod").value
-            this.sub_total = document.getElementById("subtotal").value
-            this.fecha_venta = document.getElementById("fechaventa").value
+           // this.sub_total = document.getElementById("subtotal").value
+            //this.fecha_venta = document.getElementById("fechaventa").value
             this.telefono = document.getElementById("telefono").value
 
             this.newVenta = {
-                            "venta_id": this.venta_id,
+                            //"venta_id": this.venta_id,
                             "id_producto": this.id_producto,
-                            "nombre_producto": this.nombre_producto,
-                            "precio_producto": this.precio_producto,
+                            //"nombre_producto": this.nombre_producto,
+                            //"precio_producto": this.precio_producto,
                             "cantidad_producto": parseInt(this.cantidad_producto),
-                            "sub_total": this.sub_total,
-                            "fecha_venta": this.fecha_venta,
+                            //"sub_total": this.sub_total,
+                            //"fecha_venta": this.fecha_venta,
                             "telefono": parseInt(this.telefono),
             }
             let self = this          
             axios.post("http://127.0.0.1:8000/venta/crear/", this.newVenta)
                 .then((result) => {
-                    
+                    console.log(result.data)
                     window.confirm("Venta creada");
-                    self.items = result.newVenta
+                    self.items = result.data
+                    self.subtotal1 = result.data.sub_total
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
-            this.myProvider()
+            
+            this.totalventa= this.totalventa+this.subtotal1
+            this.showTable= true
             this.$refs.table.refresh()
+
         },
         
 
         comprar: function () {
-            this.venta_id = document.getElementById("idventa").value
-
+            //this.venta_id = document.getElementById("idventa").value
+             ///////////////
+            //self.venta_id = result.data.venta_id
             console.log("Entró");
             let self = this
             
             axios.get("http://127.0.0.1:8000/venta/comprar/")
             .then((result) => {
-                self.items = result.data
+                self.items = []
             }).catch(error => {
-                
                 alert("ERROR Servidor");
                 return []
             })
+            this.showTable= false
+            this.$refs.table.refresh()
+            document.getElementById("telefono").value = ""
         },
 
         myProvider: function () {
@@ -277,14 +348,40 @@ export default {
         },
 */
         cleanCampos: function () { 
-            document.getElementById("idventa").value = ""
+           // document.getElementById("idventa").value = ""
             document.getElementById("idprod").value = ""
             document.getElementById("nomprod").value = ""
-            document.getElementById("precprod").value = ""
+            //document.getElementById("precprod").value = ""
             document.getElementById("cantprod").value = ""
-            document.getElementById("subtotal").value = ""
-            document.getElementById("fechaventa").value = ""
-            document.getElementById("telefono").value = ""
+           // document.getElementById("subtotal").value = ""
+           // document.getElementById("fechaventa").value = ""
+           // document.getElementById("telefono").value = ""
+        },
+
+        myRowClickHandler(record, index) {
+            // 'record' will be the row data from items
+            // `index` will be the visible row number (available in the v-model 'shownItems')
+            self.id_producto = record.id_producto
+            self.nombre_producto = record.nombre_producto
+            self.cantidad_producto = record.cantidad_producto
+            
+            document.getElementById("idprod").value = self.id_producto;
+            document.getElementById("nomprod").value = self.nombre_producto;
+            document.getElementById("cantprod").value = self.cantidad_producto;  
+        },
+
+        listarProductos: function () {
+            console.log("Entro");
+            let self = this
+            
+            axios.get("http://127.0.0.1:8000/producto/lista/")
+            .then((result) => {
+                return result.data.nombre_producto
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
         },
     
     },

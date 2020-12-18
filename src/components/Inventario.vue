@@ -41,16 +41,26 @@
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
                     </right>
                 </div>
             </div>
         </form>
-        <br />
         
-        <b-table v-show="showTable" sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
+        
+        <b-table 
+            v-show="showTable"
+            sticky-header 
+            ref="table" 
+            id="my-table" 
+            striped hover 
+            show-empty = true
+            :fields="fields" 
+            :items="items"
+            @row-clicked="myRowClickHandler"
+        ></b-table>
         
     </div>
 </template>
@@ -92,8 +102,14 @@ export default {
                 {value: 'tipicos', text: 'Típicos'},
                 {value: 'varios', text: 'Varios'},
                 {value: 'vinos', text: 'Vinos'},
-            ]
-
+            ],
+            fields: [
+                { key: 'id_producto', label: 'Id Producto', sortable: true, sortDirection: 'desc' },
+                { key: 'nombre', label: 'Nombre', sortable: true, class: 'text-center' },
+                { key: 'precio', label: 'Precio', sortable: true, class: 'text-center' },
+                { key: 'cantidad', label: 'Cantidad', sortable: true, class: 'text-center' },
+                { key: 'categoria', label: 'Categoría', sortable: true, class: 'text-center' },
+            ],
         };
     },
     methods: {
@@ -109,7 +125,7 @@ export default {
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/consulta/" + this.id)
+            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
                 .then((result) => {
                     self.id = result.data.id
                     self.nombre = result.data.nombre
@@ -122,7 +138,7 @@ export default {
                     document.getElementById("precprod").value = self.precio;
                     document.getElementById("cantprod").value = self.cantidad;
                    //document.getElementById("catprod").value = self.categoria;   
-                   self.selected = self.categoria;              
+                    self.selected = self.categoria;              
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
@@ -142,7 +158,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
+            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -156,7 +172,7 @@ export default {
             console.log("Entro");
             let self = this
             
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
+            axios.get("http://127.0.0.1:8000/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -164,6 +180,44 @@ export default {
                 alert("ERROR Servidor");
                 return []
             })
+        },
+        filtrarProducto:function () {
+            console.log("Entro a buscar");
+            this.snombre = document.getElementById("nomprod").value
+            this.cat = document.getElementById("catprod").value
+            this.id = document.getElementById("idprod").value
+            let self = this
+            if (this.snombre!=""){
+                axios.get("http://127.0.0.1:8000/producto/consulta_n/"+ this.snombre)
+            .then((result) => {
+                self.items = result.data
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })   
+            }
+            else if (this.cat!="")
+                {
+            axios.get("http://127.0.0.1:8000/producto/consulta_g/" + this.cat)
+                .then((result) => {
+                self.items = result.data
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
+                }
+            else if(this.id!=""){
+                axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+                .then((result) => {
+                self.items = [result.data]
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
+            }
         },
         deleteProducto: function () {
             this.id = document.getElementById("idprod").value
@@ -197,7 +251,24 @@ export default {
             document.getElementById("catprod").value = ""
                                 
         },
+        myRowClickHandler(record, index) {
+            // 'record' will be the row data from items
+            // `index` will be the visible row number (available in the v-model 'shownItems')
+            self.id = record.id
+            self.nombre = record.nombre
+            self.precio = record.precio
+            self.cantidad = record.cantidad
+            self.categoria = record.categoria
+            
+            document.getElementById("idprod").value = self.id;
+            document.getElementById("nomprod").value = self.nombre;
+            document.getElementById("precprod").value = self.precio;
+            document.getElementById("cantprod").value = self.cantidad;
+            document.getElementById("catprod").value = self.categoria;    
+            
+        },
     },
+    
 }
 </script>
 
@@ -250,12 +321,11 @@ export default {
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
-
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 </style>
