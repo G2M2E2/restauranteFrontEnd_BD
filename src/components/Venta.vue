@@ -52,11 +52,13 @@
                 <div style='text-align:center'>
                     <right>
                         <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
-                        <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
+                    <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="createVenta">Agregar</button>
+                       <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
+                       <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>
+                        <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> -->
+                        <br /><br />
                         
 
                     </right>
@@ -75,53 +77,53 @@
 
 import axios from "axios";
 export default {
-    name: "Inventario",
-
+    name: "Venta",
     data: function () {
         return {
-            idventa: 0,
-            idprod: "", //¿está bien así o debería ser solo id?
-            nombre: "",
-            precio: 0,
-            cantidad: 0,
-            subtotal: 0,
-            fecha: "",
+            venta_id: 0,
+            id_producto: "", //¿está bien así o debería ser solo id?
+            nombre_producto: "",
+            precio_producto: 0,
+            sub_total: 0,
+            cantidad_producto: 0,
+            fecha_venta: "",
             telefono: 0,
-            newVenta: {}, //¿?
-            items: [] //¿?
+            newVenta: {}, 
+            items: [] 
         };
     },
 
 
     methods: {
         init: function () {
-        if (this.$route.name != "venta") {
-            let username = input.idprod.getItem("current_username");
-            this.$router.push({name: "venta", params: { username: 'username' }});
-        }
+            if (this.$route.name != "venta") {
+                let username = input.venta_id.getItem("current_username");
+                this.$router.push({name: "venta", params: { username: 'username' }});
+            }
         },
 
+
         findVenta: function () {
-            this.id = document.getElementById("idventa").value
+            this.venta_id = document.getElementById("idventa").value
             let self = this
-            axios.get("http://127.0.0.1:8000/venta/consulta/" + this.id)
+            axios.get("http://127.0.0.1:8000/venta/consulta/" + this.venta_id)
                 .then((result) => {
-                    self.idventa = result.data.venta_id
-                    self.idprod = result.data.id_producto
-                    self.nombre = result.data.nombre
-                    self.precio = result.data.precio
-                    self.cantidad = result.data.cantidad
-                    self.subtotal = result.data.subtotal
-                    self.fecha = result.data.fecha
+                    self.venta_id = result.data.venta_id
+                    self.id_producto = result.data.id_producto
+                    self.nombre = result.data.nombre_producto
+                    self.precio = result.data.precio_producto
+                    self.cantidad = result.data.cantidad_producto
+                    self.subtotal = result.data.sub_total
+                    self.fecha = result.data.fecha_venta
                     self.telefono = result.data.telefono
                     
-                    document.getElementById("idventa").value = self.idventa;
-                    document.getElementById("idprod").value = self.idprod;
-                    document.getElementById("nomprod").value = self.nombre;
-                    document.getElementById("precprod").value = self.precio;
-                    document.getElementById("cantprod").value = self.cantidad;
-                    document.getElementById("subtotal").value = self.subtotal;
-                    document.getElementById("fechaventa").value = self.fecha;   
+                    document.getElementById("idventa").value = self.venta_id;
+                    document.getElementById("idprod").value = self.id_producto;
+                    document.getElementById("nomprod").value = self.nombre_producto;
+                    document.getElementById("precprod").value = self.precio_producto;
+                    document.getElementById("cantprod").value = self.cantidad_producto;
+                    document.getElementById("subtotal").value = self.sub_total;
+                    document.getElementById("fechaventa").value = self.fecha_venta;   
                     document.getElementById("telefono").value = self.telefono;                
                 })
                 .catch((error) => {
@@ -130,29 +132,31 @@ export default {
         },
 
         createVenta: function () {
-            this.idventa = document.getElementById("idventa").value
-            this.idprod = document.getElementById("idprod").value
-            this.nombre = document.getElementById("nomprod").value
-            this.precio = document.getElementById("precprod").value
-            this.cantidad = document.getElementById("cantprod").value
-            this.subtotal = document.getElementById("subtotal").value
-            this.fecha = document.getElementById("fechaventa").value
+            this.venta_id = document.getElementById("idventa").value
+            this.id_producto = document.getElementById("idprod").value
+            this.nombre_producto = document.getElementById("nomprod").value
+            this.precio_producto = document.getElementById("precprod").value
+            this.cantidad_producto = document.getElementById("cantprod").value
+            this.sub_total = document.getElementById("subtotal").value
+            this.fecha_venta = document.getElementById("fechaventa").value
             this.telefono = document.getElementById("telefono").value
 
             this.newVenta = {
-                            "idventa": parseInt(this.idventa),
-                            "idprod": this.idprod,
-                            "nombre": this.nombre,
-                            "precio": parseInt(this.precio),
-                            "cantidad": parseInt(this.cantidad),
-                            "subtotal": parseInt(this.subtotal),
-                            "fechaventa": this.fechaventa,
+                            "venta_id": this.venta_id,
+                            "id_producto": this.id_producto,
+                            "nombre_producto": this.nombre_producto,
+                            "precio_producto": this.precio_producto,
+                            "cantidad_producto": parseInt(this.cantidad_producto),
+                            "sub_total": this.sub_total,
+                            "fecha_venta": this.fecha_venta,
                             "telefono": parseInt(this.telefono),
-            }   
+            }
             let self = this          
             axios.post("http://127.0.0.1:8000/venta/crear/", this.newVenta)
                 .then((result) => {
+                    
                     window.confirm("Venta creada");
+                    self.items = result.newVenta
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
@@ -160,6 +164,23 @@ export default {
             this.myProvider()
             this.$refs.table.refresh()
         },
+        
+/* 
+        comprar: function () {
+            this.venta_id = document.getElementById("idventa").value
+
+            console.log("Entró");
+            let self = this
+            
+            axios.get("http://127.0.0.1:8000/venta/comprar/")
+            .then((result) => {
+                self.items = result.data
+            }).catch(error => {
+                
+                alert("ERROR Servidor");
+                return []
+            })
+        },*/
 
         myProvider: function () {
             console.log("Entró");
@@ -176,6 +197,7 @@ export default {
         },
 
 //Aquí me perdí
+/*
         filtrarProducto:function () {
             console.log("Entró a buscar");
             this.snombre = document.getElementById("nomprod").value
@@ -217,16 +239,12 @@ export default {
                 return []
             })
 
-
-
             }
-            
-            
-            
-           
+             
         },
-
+*/
 ////
+/*
         deleteVenta: function () {
             this.idventa = document.getElementById("idventa").value
             this.venta = {
@@ -255,9 +273,8 @@ export default {
             this.$refs.table.refresh()
 
         },
-
-        cleanCampos: function () {
-            
+*/
+        cleanCampos: function () { 
             document.getElementById("idventa").value = ""
             document.getElementById("idprod").value = ""
             document.getElementById("nomprod").value = ""
@@ -266,10 +283,11 @@ export default {
             document.getElementById("subtotal").value = ""
             document.getElementById("fechaventa").value = ""
             document.getElementById("telefono").value = ""
-                                
         },
+    
     },
 }
+
 </script>
 
 <style>

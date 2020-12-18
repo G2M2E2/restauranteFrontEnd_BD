@@ -28,7 +28,9 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="catprod">Categoría:</label>
-                        <input type="text" class="form-control" id="catprod" name="catprod" value="" placeholder="Categoría"/>
+                        <!--<input type="text" class="form-control" id="catprod" name="catprod" value="" placeholder="Categoría"/>-->
+                        <!--Para opciones desplegables: -->
+                        <b-form-select id="catprod" v-model="selected" :options="options" ></b-form-select>
                     </div>
                 </div>
             </div>
@@ -39,15 +41,12 @@
                         <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
+                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
-                        
-
                     </right>
                 </div>
             </div>
-        
         </form>
         <br />
         
@@ -57,11 +56,9 @@
 </template>
 
 <script>
-
 import axios from "axios";
 export default {
     name: "Inventario",
-
     data: function () {
         return {
             id: "",
@@ -70,11 +67,34 @@ export default {
             cantidad: 0,
             categoria: "",
             newProducto: {},
-            items: []
+            items: [],
+            /////para agregar las opciones desplegables/////
+            selected: null,
+            options: [
+                {value: null, text: 'Seleccione una opción'},
+                {value: 'acompanante', text: 'Acompañante'},
+                {value: 'arroz_pasta', text: 'Arroz o pasta'},
+                {value: 'bebidas', text: 'Bebidas'},
+                {value: 'carnes', text: 'Carnes'},
+                {value: 'cerdo', text: 'Cerdo'},
+                {value: 'crepes', text: 'Crepes'},
+                {value: 'desayunos', text: 'Desayunos'},
+                {value: 'ensalada', text: 'Ensalada'},
+                {value: 'entradas', text: 'Entradas'},
+                {value: 'hamburguesa', text: 'Hamburguesa'},
+                {value: 'menu infantil', text: 'Menú infantil'},
+                {value: 'patacon', text: 'Patacón'},
+                {value: 'pescados', text: 'Pescados'},
+                {value: 'picada', text: 'Picada'},
+                {value: 'pinchos', text: 'Pinchos'},
+                {value: 'pollo', text: 'Pollo'},
+                {value: 'tipicos', text: 'Típicos'},
+                {value: 'varios', text: 'Varios'},
+                {value: 'vinos', text: 'Vinos'},
+            ]
+
         };
     },
-
-
     methods: {
         init: function () {
         if (this.$route.name != "inventario") {
@@ -82,13 +102,12 @@ export default {
             this.$router.push({name: "inventario", params: { username: 'username' }});
         }
         },
-
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+            axios.get("https://restaurante-back-g1.herokuapp.com/producto/consulta/" + this.id)
                 .then((result) => {
-                    self.id = result.data.id_producto
+                    self.id = result.data.id
                     self.nombre = result.data.nombre
                     self.precio = result.data.precio
                     self.cantidad = result.data.cantidad
@@ -98,20 +117,19 @@ export default {
                     document.getElementById("nomprod").value = self.nombre;
                     document.getElementById("precprod").value = self.precio;
                     document.getElementById("cantprod").value = self.cantidad;
-                    document.getElementById("catprod").value = self.categoria;                 
+                   //document.getElementById("catprod").value = self.categoria;   
+                   self.selected = self.categoria;              
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
         },
-
         createProducto: function () {
             this.id = document.getElementById("idprod").value
             this.nombre = document.getElementById("nomprod").value
             this.precio = document.getElementById("precprod").value
             this.cantidad = document.getElementById("cantprod").value
             this.categoria = document.getElementById("catprod").value
-
             this.newProducto = {
                             "id": this.id,
                             "nombre": this.nombre,
@@ -120,7 +138,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
+            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -130,12 +148,11 @@ export default {
             this.myProvider()
             this.$refs.table.refresh()
         },
-
         myProvider: function () {
             console.log("Entro");
             let self = this
             
-            axios.get("http://127.0.0.1:8000/producto/lista/")
+            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -144,57 +161,6 @@ export default {
                 return []
             })
         },
-
-        filtrarProducto:function () {
-            console.log("Entro a buscar");
-            this.snombre = document.getElementById("nomprod").value
-            this.cat = document.getElementById("catprod").value
-            this.id = document.getElementById("idprod").value
-            let self = this
-            if (this.snombre!=""){
-
-                axios.get("http://127.0.0.1:8000/producto/consulta_n/"+this.snombre)
-            .then((result) => {
-                self.items = result.data
-            }).catch(error => {
-                
-                alert("ERROR Servidor");
-                return []
-            })   
-
-            }
-            else if (this.cat!="")
-                {
-            axios.get("http://127.0.0.1:8000/producto/consulta_g/" + this.cat)
-                .then((result) => {
-                self.items = result.data
-            }).catch(error => {
-                
-                alert("ERROR Servidor");
-                return []
-            })
-
-                }
-
-            else if(this.id!=""){
-                axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
-                .then((result) => {
-                self.items = [result.data]
-            }).catch(error => {
-                
-                alert("ERROR Servidor");
-                return []
-            })
-
-
-
-            }
-            
-            
-            
-           
-        },
-
         deleteProducto: function () {
             this.id = document.getElementById("idprod").value
             this.producto = {
@@ -210,17 +176,14 @@ export default {
                 .then((result) => {
                     
                     confirm("El producto se eliminó exitosamente");
-                    
-                    
+                        
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
             this.myProvider()
             this.$refs.table.refresh()
-
         },
-
         cleanCampos: function () {
             
             document.getElementById("idprod").value = ""
@@ -247,7 +210,7 @@ export default {
 #Inventario h2{
     width: 100%;
     text-align: center;
-    margin-top: 7%;
+    margin-top: 1%;
     color:  #fffdfd;
 }
 #Inventario .formulario {
@@ -258,7 +221,6 @@ export default {
     font-weight: bold;
     margin-bottom: 1%;
 }
-
 #Inventario button {
     color:  #181818;  
 }
@@ -271,7 +233,6 @@ export default {
     text-align: center;
     margin-top: 0%;
 }
-
 .b-table{
     overflow:auto;
     margin-left: 0%;
