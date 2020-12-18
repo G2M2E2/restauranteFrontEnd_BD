@@ -41,7 +41,7 @@
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
-                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
                     </right>
@@ -51,6 +51,7 @@
         
         
         <b-table 
+            v-show="showTable"
             sticky-header 
             ref="table" 
             id="my-table" 
@@ -125,7 +126,7 @@ export default {
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/consulta/" + this.id)
+            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
                 .then((result) => {
                     self.id = result.data.id
                     self.nombre = result.data.nombre
@@ -138,7 +139,7 @@ export default {
                     document.getElementById("precprod").value = self.precio;
                     document.getElementById("cantprod").value = self.cantidad;
                    //document.getElementById("catprod").value = self.categoria;   
-                   self.selected = self.categoria;              
+                    self.selected = self.categoria;              
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
@@ -158,7 +159,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
+            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -172,7 +173,7 @@ export default {
             console.log("Entro");
             let self = this
             
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
+            axios.get("http://127.0.0.1:8000/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -270,11 +271,6 @@ export default {
             document.getElementById("catprod").value = self.categoria;    
             
         },
-        closeLista: function () {
-            
-            this.$refs.table.bootstrapTable('hideAllColumns')
-                                
-        },
     },
     
 }
@@ -329,12 +325,12 @@ export default {
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 </style>

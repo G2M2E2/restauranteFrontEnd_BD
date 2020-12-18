@@ -59,7 +59,8 @@
         </form>
         
         
-        <b-table 
+        <b-table
+            v-show="showTable"
             sticky-header 
             ref="table" 
             id="my-table" 
@@ -82,7 +83,7 @@ export default {
 
     data: function () {
         return {
-            
+            showTable: false,
             telefono: 0,
             nombre: "",
             direccion: "",
