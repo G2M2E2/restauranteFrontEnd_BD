@@ -150,7 +150,7 @@ import vueRouter from 'vue-router'
   .header nav button{
     color: #E5E7E9;
     background: #19191a;
-    border: 1px solid #E5E7E9;
+    border: 1px solid #19191a;
     border-radius: 5px;
     padding: 5px 30px;
     height: 45%;

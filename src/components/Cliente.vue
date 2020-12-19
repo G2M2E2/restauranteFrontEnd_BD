@@ -8,32 +8,36 @@
             <div class = "formulario" >
 
                 <div class="form-row" >
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-2">
                         <label for="Phone1">Teléfono:</label>
                         <input type="number" class="form-control" id="Phone" name="Phone" value=""  placeholder="Teléfono"/>
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="name">Nombre:</label>
                         <input type="text" class="form-control" id="name" name="name" value="" placeholder="Nombre"/>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="idCC">Cédula:</label>
                         <input type="text" class="form-control" id="idCC" name="idCC" value="" placeholder="Cédula"/>  
                     </div>
-                    <div class="form-group col-md-5">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="text" class="form-control" id="email" name="email" value="" placeholder="correo@gmail.com"/>
+                    </div>
+                    <div class="form-group col-md-4">
                         <label for="birth">Cumpleaños:</label>
                         <input type="text" class="form-control" id="birth" name="birth" value="" placeholder="AAAA-MM-DD"/>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         <label for="adress">Dirección:</label>
                         <input type="text" class="form-control" id="adress" name="adress" value="" placeholder="Cra. 24 # ..."/>
                     </div>
                 
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="zone">Barrio:</label>
                         <input type="text" class="form-control" id="zone" name="zone" value="" placeholder="Barrio"/>
                     
@@ -47,7 +51,7 @@
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button>
                         <button type="button" class="btn btn-warning"  v-on:click="findCliente">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="makeCliente">Crear</button>
-                        <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="updateCliente">Actualizar</button>
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteCliente">Eliminar</button><br />
                         
@@ -121,7 +125,7 @@ export default {
         findCliente: function () {
             this.telefono = document.getElementById("Phone").value
             let self = this
-            axios.get("http://127.0.0.1:8000/cliente/consulta/" + this.telefono)
+            axios.get("https://restaurante-back-db.herokuapp.com/cliente/consulta/" + this.telefono)
                 .then((result) => {
                     self.telefono = result.data.telefono
                     self.nombre = result.data.nombre
@@ -129,6 +133,7 @@ export default {
                     self.barrio = result.data.barrio
                     self.cedula = result.data.cedula
                     self.cumpleanos = result.data.cumpleanos
+                    self.correo = result.data.correo_electronico
                     confirm("Se encontró el cliente " + self.nombre);
                     document.getElementById("Phone").value = self.telefono;
                     document.getElementById("name").value = self.nombre;
@@ -136,6 +141,7 @@ export default {
                     document.getElementById("zone").value = self.barrio;
                     document.getElementById("idCC").value = self.cedula;
                     document.getElementById("birth").value = self.cumpleanos;
+                    document.getElementById("email").value = self.correo;
                     
                 })
                 .catch((error) => {
@@ -151,7 +157,40 @@ export default {
             document.getElementById("zone").value = ""
             document.getElementById("idCC").value = ""
             document.getElementById("birth").value = ""
+            document.getElementById("email").value = ""
                                 
+        },
+        updateCliente: function () {
+            this.telefono = document.getElementById("Phone").value
+            this.nombre = document.getElementById("name").value
+            this.direccion = document.getElementById("adress").value
+            this.barrio = document.getElementById("zone").value
+            this.cedula = document.getElementById("idCC").value
+            this.cumpleanos = document.getElementById("birth").value
+            this.correo = document.getElementById("email").value
+
+            this.newCliente = {
+                            "telefono": parseInt(this.telefono, 10),
+                            "nombre": this.nombre,
+                            "direccion": this.direccion,
+                            "barrio": this.barrio,
+                            "cedula": this.cedula,
+                            "cumpleanos": this.cumpleanos,
+                            "correo_electronico":this.correo
+            }    
+            let self = this            
+            axios.put("https://restaurante-back-db.herokuapp.com/cliente/actualizar/", this.newCliente)
+                .then((result) => {
+                    window.confirm("Se actualizo el cliente " + result.data.nombre);
+                    
+                })
+                .catch((error) => {
+                    alert("ERROR Servidor");
+                });
+            
+            this.myProvider()
+            this.$refs.table.refresh()
+
         },
         makeCliente: function () {
             this.telefono = document.getElementById("Phone").value
@@ -160,6 +199,7 @@ export default {
             this.barrio = document.getElementById("zone").value
             this.cedula = document.getElementById("idCC").value
             this.cumpleanos = document.getElementById("birth").value
+            this.correo = document.getElementById("email").value
 
             this.newCliente = {
                             "telefono": parseInt(this.telefono, 10),
@@ -167,10 +207,11 @@ export default {
                             "direccion": this.direccion,
                             "barrio": this.barrio,
                             "cedula": this.cedula,
-                            "cumpleanos": this.cumpleanos
+                            "cumpleanos": this.cumpleanos,
+                            "correo_electronico":this.correo
             }    
             let self = this            
-            axios.post("http://127.0.0.1:8000/cliente/crear/", this.newCliente)
+            axios.post("https://restaurante-back-db.herokuapp.com/cliente/crear/", this.newCliente)
                 .then((result) => {
                     window.confirm("Cliente Creado");
                     
@@ -187,7 +228,7 @@ export default {
             console.log("Entro");
             let self = this
             
-            axios.get("http://127.0.0.1:8000/cliente/lista/")
+            axios.get("https://restaurante-back-db.herokuapp.com/cliente/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -203,7 +244,7 @@ export default {
                             } 
             let telefono = this.cliente
             let self = this
-            axios.delete("https://restaurante-back-g1.herokuapp.com/cliente/delete/", {data: telefono})
+            axios.delete("https://restaurante-back-db.herokuapp.com/cliente/eliminar/", {data: telefono})
                 .then((result) => {
                     
                     confirm("Se elimino de manera satisfactoria");
@@ -226,6 +267,7 @@ export default {
             self.barrio = record.barrio
             self.cedula = record.cedula
             self.cumpleanos = record.cumpleanos
+            self.correo = record.correo_electronico
             
             document.getElementById("Phone").value = self.telefono;
             document.getElementById("name").value = self.nombre;
@@ -233,6 +275,7 @@ export default {
             document.getElementById("zone").value = self.barrio;
             document.getElementById("idCC").value = self.cedula;
             document.getElementById("birth").value = self.cumpleanos;
+            document.getElementById("email").value = self.correo;
             
         },
         
