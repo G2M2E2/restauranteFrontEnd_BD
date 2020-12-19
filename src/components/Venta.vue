@@ -17,8 +17,13 @@
                         <div class="form-group col-md-2">
                         <button type="button" class="btn btn-warning"  v-on:click="findCliente">Buscar</button>
                     </div>
-                    
+                    <div class="form-group col-md-4">
+                        <b-input-group size="lg" prepend="Venta Id">
+                        <b-form-input id="idventadisplay" disabled></b-form-input>
+                        </b-input-group>
                     </div>
+                    
+                </div>
                 <div class="form-row">
                     <div class="form-group col-md-2">
                         <label for="nomprod">Nombre producto:</label>
@@ -30,6 +35,11 @@
                     
                     <div class="form-group col-md-2">
                         <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <b-input-group size="lg" prepend="Total $" append=".00" >
+                        <b-form-input id="totalpanel" disabled></b-form-input>
+                        </b-input-group>
                     </div>
 
                 </div>
@@ -57,6 +67,14 @@
                         <input type="number" class="form-control" id="cantprod" name="cantprod" value="" placeholder="Cantidad"/>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="comentarios">Comentarios:</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="text" class="form-control" id="comentarios" name="comentarios" value="" placeholder="Comentarios adicionales"/>
+                    </div>
+                </div>
             </div>
             <b-table 
                 v-show="showTable1" 
@@ -78,11 +96,11 @@
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
-                        <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
+                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button>
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
-                        <!-- <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button>-->
+                        <button type="button" class="btn btn-warning" v-on:click="deleteVenta">Eliminar</button>
                         <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> 
-                        
+                        <button type="button" class="btn btn-warning" v-on:click="cancelar">Cancelar Venta</button> 
 
                 
                 </div>
@@ -98,6 +116,7 @@
             ref="table" 
             id="my-table" 
             striped hover 
+            @row-clicked="myRowClickHandler"
             :items="items">
         </b-table>
 
@@ -113,8 +132,8 @@ export default {
     name: "Venta",
     data: function () {
         return {
-            showTable: true,
-            showTable1: true,
+            showTable: false,
+            showTable1: false,
             venta_id: 0,
             totalventa: 0,
             id_producto: "", //¿está bien así o debería ser solo id?
@@ -125,6 +144,7 @@ export default {
             fecha_venta: "",
             id:"",
             telefono: 0,
+            comentarios: "",
             precio: 0,
             nombre: "",
             newVenta: {}, 
@@ -156,6 +176,12 @@ export default {
         toggle: function() {
         this.showTable = !this.showTable;
         },
+        cancelar: function(){
+            document.getElementById("telefono").disabled = false
+            document.getElementById("telefono").value = ""
+            document.getElementById("totalpanel").value = ""
+
+        },
         findVenta: function () {
             this.venta_id = document.getElementById("idventa").value
             let self = this
@@ -183,37 +209,80 @@ export default {
                     alert("ERROR Servidor");
                 });
         },
-
-        createVenta: function () {
+        
+        deleteVenta: function () {
             this.id_producto = document.getElementById("idprod").value
-            this.cantidad_producto = document.getElementById("cantprod").value
             this.telefono = document.getElementById("telefono").value
-
+            this.idventa = document.getElementById("idventadisplay").value
+            this.subtotalT = document.getElementById("totalpanel").value
+            this.subtotal1 = this.subtotal
+            console.log(this.subtotal1)
+            console.log(this.subtotalT)
             this.newVenta = {
-                            "venta_id": this.venta_id,
+
                             "id_producto": this.id_producto,
-                            "nombre_producto": this.nombre_producto,
-                            "precio_producto": this.precio_producto,
-                            "cantidad_producto": parseInt(this.cantidad_producto),
-                            "sub_total": this.sub_total,
-                            "fecha_venta": this.fecha_venta,
                             "telefono": parseInt(this.telefono),
+                            "venta_id": this.idventa
             }
+            let newVenta = this.newVenta
             let self = this          
-            axios.post("https://restaurante-back-db.herokuapp.com/venta/crear/", this.newVenta)
+            axios.delete("https://restaurante-back-db.herokuapp.com/venta/eliminar/", {data: newVenta})
                 .then((result) => {
-                    console.log(result.data)
-                    window.confirm("Venta creada");
-                    self.items = result.data
-                    self.subtotal1 = result.data.sub_total
+                    window.confirm("Articulo eliminado");
+
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
+            
+            this.subtotalT = this.subtotalT - this.subtotal1
+            document.getElementById("totalpanel").value = this.subtotalT
+            document.getElementById("idprod").value = ""
+            this.myProvider()
+            this.$refs.table.refresh()
+            
+        },
+        createVenta: function () {
+            this.id_producto = document.getElementById("idprod").value
+            this.cantidad_producto = document.getElementById("cantprod").value
+            this.telefono = document.getElementById("telefono").value
+            this.comentarios = document.getElementById("comentarios").value
+
+            this.newVenta = {
+
+                            "id_producto": this.id_producto,
+                            "cantidad_producto": parseInt(this.cantidad_producto),
+                            "telefono": parseInt(this.telefono),
+                            "observaciones": this.comentarios
+            }
+            let self = this          
+            axios.post("https://restaurante-back-db.herokuapp.com/venta/crear/", this.newVenta)
+                .then((result) => {
+                    window.confirm("Venta creada");
+                    self.items = result.data
+                    document.getElementById("idventadisplay").value = result.data[0].venta_id;
+                    self.ventas = result.data
+                    self.total = 0
+                    for (self.subtotal of self.ventas){
+                        self.total = self.subtotal.sub_total + self.total
+                    self.totalamostrar = self.total.toLocaleString() 
+                    document.getElementById("totalpanel").value =  self.total;
+                        
+                    }
+                })
+                .catch((error) => {
+                    alert("ERROR Servidor");
+                });
+            
             this.showTable1= false
-            this.totalventa= this.totalventa+this.subtotal1
             this.showTable= true
             this.$refs.table.refresh()
+            document.getElementById("telefono").disabled = true
+            document.getElementById("idprod").value = ""
+            document.getElementById("nomprod").value = ""
+            document.getElementById("precprod").value = ""
+            document.getElementById("cantprod").value = ""
+            document.getElementById("comentarios").value = ""
         },
         
 
@@ -231,13 +300,17 @@ export default {
                 return []
             })
             this.showTable= false
+            document.getElementById("telefono").disabled = false
+            document.getElementById("telefono").value = ""
+            document.getElementById("idventadisplay").value = "";
+            document.getElementById("totalpanel").value = "";
         },
 
         myProvider: function () {
             console.log("Entró");
             let self = this
             
-            axios.get("https://restaurante-back-db.herokuapp.com/venta/lista/")
+            axios.get("https://restaurante-back-db.herokuapp.com/venta/carrito/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -247,13 +320,10 @@ export default {
             })
         },
         cleanCampos: function () { 
-            document.getElementById("idventa").value = ""
             document.getElementById("idprod").value = ""
             document.getElementById("nomprod").value = ""
             document.getElementById("precprod").value = ""
             document.getElementById("cantprod").value = ""
-            document.getElementById("subtotal").value = ""
-            document.getElementById("fechaventa").value = ""
             document.getElementById("telefono").value = ""
         },
         filtrarProducto:function () {
@@ -308,9 +378,20 @@ export default {
             self.nombre = record.nombre
             self.precio = record.precio
             
+            
             document.getElementById("idprod").value = self.id;
             document.getElementById("nomprod").value = self.nombre;
             document.getElementById("precprod").value = self.precio;  
+            
+        },
+        myRowClickHandler(record, index) {
+            // 'record' will be the row data from items
+            // `index` will be the visible row number (available in the v-model 'shownItems')
+
+            self.id = record.id_producto
+            this.subtotal = record.sub_total
+            console.log(this.subtotal)
+            document.getElementById("idprod").value = self.id;
             
         },
     

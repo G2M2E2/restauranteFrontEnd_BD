@@ -13,8 +13,8 @@
                         <input type="text" class="form-control" id="idprod" name="idprod" value=""  placeholder="Id"/>
                     </div>
                     <div class="form-group col-md-5">
-                        <label for="nomprod">Nombre:</label>
-                        <input type="text" class="form-control" id="nomprod" name="nomprod" value="" placeholder="Nombre"/>
+                        <label for="nomprod">Nombre producto:</label>
+                        <input type="text" class="form-control" id="nomprod" name="nomprod" value="" placeholder="Nombre producto"/>
                     </div>
                 </div>
                 <div class="form-row">
@@ -37,14 +37,13 @@
             <br>
             <div class="botones">
                 <div style='text-align:center'>
-                    <right>
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                         <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
                         <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> 
+                        <button type="button" class="btn btn-warning" v-on:click="updateProducto">Actualizar</button>
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
-                    </right>
                 </div>
             </div>
         </form>
@@ -56,7 +55,6 @@
             ref="table" 
             id="my-table" 
             striped hover 
-            show-empty = true
             :fields="fields" 
             :items="items"
             @row-clicked="myRowClickHandler"
@@ -145,19 +143,46 @@ export default {
                     alert("ERROR Servidor");
                 });
         },
-        createProducto: function () {
+        
+        updateProducto: function () {
             this.id = document.getElementById("idprod").value
             this.nombre = document.getElementById("nomprod").value
             this.precio = document.getElementById("precprod").value
             this.cantidad = document.getElementById("cantprod").value
             this.categoria = document.getElementById("catprod").value
             this.newProducto = {
-                            "id": this.id,
+                            "id_producto": this.id,
                             "nombre": this.nombre,
                             "precio": parseInt(this.precio),
                             "cantidad": parseInt(this.cantidad),
                             "categoria": this.categoria,
-            }   
+            }  
+            
+            let self = this          
+            axios.put("https://restaurante-back-db.herokuapp.com/producto/actualizar/", this.newProducto)
+                .then((result) => {
+                    window.confirm("Producto actualizado");
+                })
+                .catch((error) => {
+                    alert("ERROR Servidor");
+                });
+            this.myProvider()
+            this.$refs.table.refresh()
+        },
+        
+        createProducto: function () {
+            this.nombre = document.getElementById("nomprod").value
+            this.precio = document.getElementById("precprod").value
+            this.cantidad = document.getElementById("cantprod").value
+            this.categoria = document.getElementById("catprod").value
+            console.log(this.categoria)
+            this.newProducto = {
+                            "nombre": this.nombre,
+                            "precio": parseInt(this.precio),
+                            "cantidad": parseInt(this.cantidad),
+                            "categoria": this.categoria,
+            }
+            console.log(this.newProducto)   
             let self = this          
             axios.post("https://restaurante-back-db.herokuapp.com/producto/crear/", this.newProducto)
                 .then((result) => {
@@ -184,7 +209,6 @@ export default {
         },
 
         filtrarProducto:function () {
-            console.log("Entro a buscar");
             this.snombre = document.getElementById("nomprod").value
             this.cat = document.getElementById("catprod").value
             this.id = document.getElementById("idprod").value
@@ -220,20 +244,17 @@ export default {
                 return []
             })
             }
+            this.showTable = true
         },
 
         deleteProducto: function () {
             this.id = document.getElementById("idprod").value
             this.producto = {
-                            "id": this.id,
-                            "nombre": this.nombre,
-                            "precio": this.precio,
-                            "cantidad": this.cantidad,
-                            "categoria": this.categoria
+                            "id_producto": this.id,
                             } 
             let id = this.producto
             let self = this
-            axios.delete("https://restaurante-back-db.herokuapp.com/producto/delete/", {data: id})
+            axios.delete("https://restaurante-back-db.herokuapp.com/producto/eliminar/", {data: id})
                 .then((result) => {
                     
                     confirm("El producto se eliminó exitosamente");
