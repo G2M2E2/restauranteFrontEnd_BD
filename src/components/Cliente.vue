@@ -121,7 +121,7 @@ export default {
         findCliente: function () {
             this.telefono = document.getElementById("Phone").value
             let self = this
-            axios.get("http://127.0.0.1:8000/cliente/consulta/" + this.telefono)
+            axios.get("https://restaurante-back-db.herokuapp.com/cliente/consulta/" + this.telefono)
                 .then((result) => {
                     self.telefono = result.data.telefono
                     self.nombre = result.data.nombre
@@ -170,7 +170,7 @@ export default {
                             "cumpleanos": this.cumpleanos
             }    
             let self = this            
-            axios.post("http://127.0.0.1:8000/cliente/crear/", this.newCliente)
+            axios.post("https://restaurante-back-db.herokuapp.com/cliente/crear/", this.newCliente)
                 .then((result) => {
                     window.confirm("Cliente Creado");
                     
@@ -187,7 +187,7 @@ export default {
             console.log("Entro");
             let self = this
             
-            axios.get("http://127.0.0.1:8000/cliente/lista/")
+            axios.get("https://restaurante-back-db.herokuapp.com/cliente/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -203,7 +203,7 @@ export default {
                             } 
             let telefono = this.cliente
             let self = this
-            axios.delete("https://restaurante-back-g1.herokuapp.com/cliente/delete/", {data: telefono})
+            axios.delete("https://restaurante-back-db.herokuapp.com/cliente/delete/", {data: telefono})
                 .then((result) => {
                     
                     confirm("Se elimino de manera satisfactoria");

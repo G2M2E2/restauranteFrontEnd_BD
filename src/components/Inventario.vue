@@ -126,9 +126,9 @@ export default {
         findProducto: function () {
             this.id = document.getElementById("idprod").value
             let self = this
-            axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+            axios.get("https://restaurante-back-db.herokuapp.com/producto/consulta/" + this.id)
                 .then((result) => {
-                    self.id = result.data.id
+                    self.id = result.data.id_producto
                     self.nombre = result.data.nombre
                     self.precio = result.data.precio
                     self.cantidad = result.data.cantidad
@@ -159,7 +159,7 @@ export default {
                             "categoria": this.categoria,
             }   
             let self = this          
-            axios.post("http://127.0.0.1:8000/producto/crear/", this.newProducto)
+            axios.post("https://restaurante-back-db.herokuapp.com/producto/crear/", this.newProducto)
                 .then((result) => {
                     window.confirm("Producto Creado");
                 })
@@ -173,7 +173,7 @@ export default {
             console.log("Entro");
             let self = this
             
-            axios.get("http://127.0.0.1:8000/producto/lista/")
+            axios.get("https://restaurante-back-db.herokuapp.com/producto/lista/")
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -190,7 +190,7 @@ export default {
             this.id = document.getElementById("idprod").value
             let self = this
             if (this.snombre!=""){
-                axios.get("http://127.0.0.1:8000/producto/consulta_n/"+ this.snombre)
+                axios.get("https://restaurante-back-db.herokuapp.com/producto/consulta_n/"+ this.snombre)
             .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -201,7 +201,7 @@ export default {
             }
             else if (this.cat!="")
                 {
-            axios.get("http://127.0.0.1:8000/producto/consulta_g/" + this.cat)
+            axios.get("https://restaurante-back-db.herokuapp.com/producto/consulta_g/" + this.cat)
                 .then((result) => {
                 self.items = result.data
             }).catch(error => {
@@ -211,7 +211,7 @@ export default {
             })
                 }
             else if(this.id!=""){
-                axios.get("http://127.0.0.1:8000/producto/consulta/" + this.id)
+                axios.get("https://restaurante-back-db.herokuapp.com/producto/consulta/" + this.id)
                 .then((result) => {
                 self.items = [result.data]
             }).catch(error => {
@@ -233,7 +233,7 @@ export default {
                             } 
             let id = this.producto
             let self = this
-            axios.delete("https://restaurante-back-g1.herokuapp.com/producto/delete/", {data: id})
+            axios.delete("https://restaurante-back-db.herokuapp.com/producto/delete/", {data: id})
                 .then((result) => {
                     
                     confirm("El producto se eliminó exitosamente");
