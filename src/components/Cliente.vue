@@ -181,7 +181,7 @@ export default {
             let self = this            
             axios.put("https://restaurante-back-db.herokuapp.com/cliente/actualizar/", this.newCliente)
                 .then((result) => {
-                    window.confirm("Se actualizo el cliente " + result.data.nombre);
+                    window.confirm("Se actualizó el cliente " + result.data.nombre);
                     
                 })
                 .catch((error) => {
@@ -213,7 +213,7 @@ export default {
             let self = this            
             axios.post("https://restaurante-back-db.herokuapp.com/cliente/crear/", this.newCliente)
                 .then((result) => {
-                    window.confirm("Cliente Creado");
+                    window.confirm("Cliente creado");
                     
                 })
                 .catch((error) => {
@@ -247,7 +247,7 @@ export default {
             axios.delete("https://restaurante-back-db.herokuapp.com/cliente/eliminar/", {data: telefono})
                 .then((result) => {
                     
-                    confirm("Se elimino de manera satisfactoria");
+                    confirm("Se eliminó de manera satisfactoria");
                     
                     
                 })
