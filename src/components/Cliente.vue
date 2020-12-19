@@ -8,32 +8,36 @@
             <div class = "formulario" >
 
                 <div class="form-row" >
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-2">
                         <label for="Phone1">Teléfono:</label>
                         <input type="number" class="form-control" id="Phone" name="Phone" value=""  placeholder="Teléfono"/>
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="name">Nombre:</label>
                         <input type="text" class="form-control" id="name" name="name" value="" placeholder="Nombre"/>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="idCC">Cédula:</label>
                         <input type="text" class="form-control" id="idCC" name="idCC" value="" placeholder="Cédula"/>  
                     </div>
-                    <div class="form-group col-md-5">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="text" class="form-control" id="email" name="email" value="" placeholder="correo@gmail.com"/>
+                    </div>
+                    <div class="form-group col-md-4">
                         <label for="birth">Cumpleaños:</label>
                         <input type="text" class="form-control" id="birth" name="birth" value="" placeholder="AAAA-MM-DD"/>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         <label for="adress">Dirección:</label>
                         <input type="text" class="form-control" id="adress" name="adress" value="" placeholder="Cra. 24 # ..."/>
                     </div>
                 
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="zone">Barrio:</label>
                         <input type="text" class="form-control" id="zone" name="zone" value="" placeholder="Barrio"/>
                     
@@ -160,6 +164,7 @@ export default {
             this.barrio = document.getElementById("zone").value
             this.cedula = document.getElementById("idCC").value
             this.cumpleanos = document.getElementById("birth").value
+            this.correo = document.getElementById("email").value
 
             this.newCliente = {
                             "telefono": parseInt(this.telefono, 10),
@@ -167,7 +172,8 @@ export default {
                             "direccion": this.direccion,
                             "barrio": this.barrio,
                             "cedula": this.cedula,
-                            "cumpleanos": this.cumpleanos
+                            "cumpleanos": this.cumpleanos,
+                            "correo_electronico":this.correo
             }    
             let self = this            
             axios.post("https://restaurante-back-db.herokuapp.com/cliente/crear/", this.newCliente)
