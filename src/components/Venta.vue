@@ -74,7 +74,7 @@
                 <div style='text-align:center'>
                     
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
-                    <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
+                        <!--<button type="button" class="btn btn-warning"  v-on:click="listarProductos">Buscar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
                         <!-- <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
@@ -376,7 +376,7 @@ export default {
             
             axios.get("http://127.0.0.1:8000/producto/lista/")
             .then((result) => {
-                return result.data.nombre_producto
+                self.items = result.data
             }).catch(error => {
                 
                 alert("ERROR Servidor");
