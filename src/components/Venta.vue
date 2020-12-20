@@ -96,7 +96,7 @@
                         <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button>
+                    <!--<button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button>-->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteVenta">Eliminar</button>
                         <button type="button" class="btn btn-warning" v-on:click="comprar">Comprar</button> 
@@ -136,7 +136,7 @@ export default {
             showTable1: false,
             venta_id: 0,
             totalventa: 0,
-            id_producto: "", //¿está bien así o debería ser solo id?
+            id_producto: "", 
             nombre_producto: "",
             precio_producto: 0,
             sub_total: 0,
@@ -228,7 +228,7 @@ export default {
             let self = this          
             axios.delete("https://restaurante-back-db.herokuapp.com/venta/eliminar/", {data: newVenta})
                 .then((result) => {
-                    window.confirm("Articulo eliminado");
+                    window.confirm("Artículo eliminado");
 
                 })
                 .catch((error) => {
@@ -258,7 +258,7 @@ export default {
             let self = this          
             axios.post("https://restaurante-back-db.herokuapp.com/venta/crear/", this.newVenta)
                 .then((result) => {
-                    window.confirm("Venta creada");
+                    window.confirm("Producto agregado");
                     self.items = result.data
                     document.getElementById("idventadisplay").value = result.data[0].venta_id;
                     self.ventas = result.data
