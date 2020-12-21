@@ -93,7 +93,7 @@
             <div class="botones">
                 <div style='text-align:center'>
                     
-                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Lista</button> 
+                        <button type="button" class="btn btn-warning" @click="myProvider" v-on:click="toggle">Carrito</button> 
                     <!--<button type="button" class="btn btn-warning"  v-on:click="findVenta">Buscar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="createVenta" >Agregar</button>
                     <!--<button type="button" class="btn btn-warning" v-on:click="filtrarProducto">Filtrar</button>-->
