@@ -294,6 +294,7 @@ export default {
             axios.get("https://restaurante-back-db.herokuapp.com/venta/comprar/")
             .then((result) => {
                 self.items = []
+                window.confirm("Se realizó la compra satisfactoriamente");
             }).catch(error => {
                 
                 alert("ERROR Servidor");
